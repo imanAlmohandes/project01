@@ -40,8 +40,11 @@
                     </div>
                     <div class="card-body">
                         <!-- Update Task Form -->
-                        <form action="{{ url('update') }}" method="POST">
-                            @csrf
+                        {{-- <form action="{{ url('update') }}" method="POST">
+                            @csrf --}}
+                            <form action="{{ route('tasks.update', $task->id) }}" method="POST">
+                                @csrf
+                                @method('PUT')                             
                             <!-- Task Name -->
                             <input type="hidden" name="id" value="{{ $task->id }}">
                             <div class="mb-3">
@@ -109,7 +112,6 @@
                                         </form>
                                         <form action="/edit/{{ $task->id }}" method="POST" class="d-inline">
                                             @csrf
-
                                             <button type="submit" class="btn btn-success">
                                                 <i class="fa fa-edit me-2"></i>Edit
                                             </button>

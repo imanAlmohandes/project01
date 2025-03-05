@@ -1,63 +1,86 @@
 <?php
-
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
 
+use App\Models\_user;
 use Illuminate\Http\Request;
 
 class UsersController extends Controller
 {
     public function index()
     {
-        $users = DB::table('_users')->get();
+        // $users = DB::table('_users')->get();
+        $users = _user::all();
+
         return view('users', compact('users'));
     }
 
     public function create()
     {
-        $name     = $_POST['name'];
-        $email    = $_POST['email'];
-        $password = bcrypt($_POST['password']);
+        $user_name     = $_POST['name'];
+        $user_email    = $_POST['email'];
+        $user_password = bcrypt($_POST['password']);
 
-        DB::table('_users')->insert([
-            'name'     => $name,
-            'email'    => $email,
-            'password' => $password
-        ]);
+        // DB::table('_users')->insert([
+        //     'name'     => $user_name,
+        //     'email'    => $user_email,
+        //     'password' => $user_password
+        // ]);
+        $user           = new _user;
+        $user->name     = $user_name;
+        $user->email    = $user_email;
+        $user->password = bcrypt($user_password);
+        $user->save();
         return redirect()->back();
     }
 
     public function destroy($id)
     {
-        DB::table('_users')->where('id', $id)->delete();
+        // DB::table('_users')->where('id', $id)->delete();
+        $user = _user::findOrFail($id);
+        $user->delete();
         return redirect()->back();
     }
 
     public function edit($id)
     {
-        $user  = DB::table('_users')->where('id', $id)->first();
-        $users = DB::table('_users')->get();
+        // $user  = DB::table('_users')->where('id', $id)->first();
+        // $users = DB::table('_users')->get();
+        $user  = _user::findOrFail($id);
+        $users = _user::all();
         return view('users', compact('user', 'users'));
     }
 
-    public function update()
+    // public function update()
+    // {
+    //     $id       = $_POST['id'];
+    //     $name     = $_POST['name'];
+    //     $email    = $_POST['email'];
+    //     $password = $_POST['password'];
+
+    //     $data = [
+    //         'name'  => $name,
+    //         'email' => $email,
+    //     ];
+
+    //     if (!empty($password)) {
+    //         $data['password'] = bcrypt($password);
+    //     }
+
+    //     DB::table('_users')->where('id', $id)->update($data);
+    //     return redirect('users');
+    // }
+
+    public function update(Request $request, $id)
     {
-        $id       = $_POST['id'];
-        $name     = $_POST['name'];
-        $email    = $_POST['email'];
-        $password = $_POST['password'];
+        $user = _user::findOrFail($id);
 
-        $data = [
-            'name'  => $name,
-            'email' => $email,
-        ];
+        $user->name  = $request->name;
+        $user->email = $request->email;
 
-        if (!empty($password)) {
-            $data['password'] = bcrypt($password);
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->password);
         }
-
-        DB::table('_users')->where('id', $id)->update($data);
+        $user->save();
         return redirect('users');
     }
-
 }
