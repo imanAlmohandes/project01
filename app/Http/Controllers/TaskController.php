@@ -12,9 +12,13 @@ class TaskController extends Controller
         $tasks = Task::all();
         return view('tasks', compact('tasks'));
     }
-    public function create()
+    public function create(Request $request)
     {
-        $task_name = $_POST['name'];
+        $task_name = $request->name;
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+        // $task_name = $_POST['name'];
         // DB::table('tasks')->insert(['name' => $task_name]);
         $task       = new Task;
         $task->name = $task_name;
@@ -44,6 +48,9 @@ class TaskController extends Controller
     // }
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
         $task       = Task::findOrFail($id);
         $task->name = $request->name;
         $task->save();

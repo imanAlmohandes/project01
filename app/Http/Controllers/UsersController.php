@@ -14,11 +14,21 @@ class UsersController extends Controller
         return view('users', compact('users'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $user_name     = $_POST['name'];
-        $user_email    = $_POST['email'];
-        $user_password = bcrypt($_POST['password']);
+        $user_name = $request->name;
+        $user_email = $request->email;
+        $user_password = $request->password;
+
+
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,',
+            'password' => 'nullable|min:6',
+        ]);
+        // $user_name     = $_POST['name'];
+        // $user_email    = $_POST['email'];
+        // $user_password = bcrypt($_POST['password']);
 
         // DB::table('_users')->insert([
         //     'name'     => $user_name,
@@ -72,6 +82,11 @@ class UsersController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email,' . $id,
+            'password' => 'nullable|min:6',
+        ]);
         $user = _user::findOrFail($id);
 
         $user->name  = $request->name;
